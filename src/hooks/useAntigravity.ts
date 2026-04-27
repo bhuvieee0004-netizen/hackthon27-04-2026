@@ -33,7 +33,7 @@ export const useAntigravity = ({ videoRef, onFrame, enabled }: UseAntigravityPro
 
     return () => {
       active = false;
-      engine.stop();
+      engine.destroy();
     };
   }, []);
 
