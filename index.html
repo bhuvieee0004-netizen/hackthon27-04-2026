@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MirrorBreaker Dev Sandbox</title>
+  </head>
+  <body class="bg-slate-950 min-h-screen">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+    
+    <!-- Simulate backend updates -->
+    <script>
+      setTimeout(() => {
+        if (window.updateUI) {
+          window.updateUI(95, ["Neural Sync established", "Scan initiated"]);
+        }
+      }, 1000);
+
+      setTimeout(() => {
+        if (window.updateUI) {
+          window.updateUI(45, ["Anomalous pulse detected", "Frame consistency drop"]);
+        }
+      }, 5000);
+
+      setTimeout(() => {
+        if (window.updateUI) {
+          window.updateUI(20, ["DEEPFAKE SIGNATURE DETECTED", "Biometric mismatch"]);
+        }
+      }, 10000);
+    </script>
+  </body>
+</html>
