@@ -1,4 +1,5 @@
 .agents/
+.vite/
 scratch/
 node_modules/
 dist/
