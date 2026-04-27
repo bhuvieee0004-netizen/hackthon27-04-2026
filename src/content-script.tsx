@@ -2,6 +2,52 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { MirrorBreakerShell } from './MirrorBreakerShell';
 import './index.css';
+import { MediaPipeEngine } from './MediaPipeEngine';
+
+let engine: MediaPipeEngine | null = null;
+
+const startEngine = async () => {
+  if (!engine) {
+    engine = new MediaPipeEngine();
+    await engine.initialize();
+  }
+};
+
+const findAndAttachVideo = () => {
+  if (!engine) return;
+  const videos = document.querySelectorAll('video');
+  // Simplistic approach: find the largest playing video (or just the first one)
+  let bestVideo: HTMLVideoElement | null = null;
+  let maxArea = 0;
+  
+  videos.forEach(v => {
+    if (v.readyState >= 2) { // HAVE_CURRENT_DATA or better
+      const area = v.clientWidth * v.clientHeight;
+      if (area > maxArea) {
+        maxArea = area;
+        bestVideo = v;
+      }
+    }
+  });
+
+  if (bestVideo) {
+    const video = bestVideo as HTMLVideoElement;
+    if ((window as any).updateUI) {
+      (window as any).updateUI(100, ["Attached to video: " + video.clientWidth + "x" + video.clientHeight]);
+    }
+    engine.attachToVideo(video);
+  }
+};
+
+const observeDOM = () => {
+  const observer = new MutationObserver(() => {
+    findAndAttachVideo();
+  });
+  observer.observe(document.body, { childList: true, subtree: true });
+  
+  // Try periodically as well, since video dimensions can change
+  setInterval(findAndAttachVideo, 2000);
+};
 
 const injectApp = () => {
   // Create a container for the shadow DOM
@@ -23,7 +69,7 @@ const injectApp = () => {
   
   const styleTag = document.createElement('link');
   styleTag.rel = 'stylesheet';
-  styleTag.href = chrome.runtime.getURL('assets/content.css');
+  styleTag.href = chrome.runtime.getURL('assets/index.css');
   shadowRoot.appendChild(styleTag);
 
   // Create app container inside shadow root
@@ -42,6 +88,10 @@ const injectApp = () => {
 // Delay slightly to ensure body exists
 if (document.body) {
   injectApp();
+  startEngine().then(observeDOM);
 } else {
-  window.addEventListener('DOMContentLoaded', injectApp);
+  window.addEventListener('DOMContentLoaded', () => {
+    injectApp();
+    startEngine().then(observeDOM);
+  });
 }

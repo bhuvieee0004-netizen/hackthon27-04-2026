@@ -1,3 +1,6 @@
+import {
+  FaceLandmarker,
+  FilesetResolver,
   FaceLandmarkerResult,
   NormalizedLandmark
 } from "@mediapipe/tasks-vision";
